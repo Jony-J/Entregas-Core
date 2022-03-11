@@ -6,6 +6,9 @@ public class PlayerController : MonoBehaviour
 {
     bool facingRight = true;
     int canJump;
+    public float velocidad;
+    public float salto;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,33 +18,29 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Movement();   
+    }
 
-        if (Input.GetKey("left"))
+    private void Movement()
+    {
+        float movimientoX = Input.GetAxis("Horizontal");
+        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(movimientoX * velocidad, gameObject.GetComponent<Rigidbody2D>().velocity.y);
+
+        if(movimientoX > 0 && !facingRight) 
         {
-            gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(-5000f * Time.deltaTime, 0));
-            if (facingRight)
-            {
-                Flip();
-            }
-            
+            Flip();
         }
-
-        if (Input.GetKey("right"))
+        if (movimientoX < 0 && facingRight)
         {
-            gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(5000f * Time.deltaTime, 0));
-            if (!facingRight)
-            {
-                Flip();
-            }
+            Flip();
         }
 
         if (Input.GetKeyDown("up") && canJump > 0)
         {
             canJump--;
-            gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 6000f));
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(gameObject.GetComponent<Rigidbody2D>().velocity.x, salto);
         }
     }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.transform.tag == "ground")
